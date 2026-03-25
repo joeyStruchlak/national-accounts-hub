@@ -10,6 +10,7 @@ import Productivity from "./pages/Productivity";
 import PayrollRec from "./pages/PayrollRec";
 import SuperRec from "./pages/SuperRec";
 import ClientRecords from "./pages/ClientRecords";
+import AIAutomation from "./pages/AIAutomation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/payroll-rec" element={<PayrollRec />} />
           <Route path="/super-rec" element={<SuperRec />} />
           <Route path="/clients" element={<ClientRecords />} />
+          <Route path="/automation" element={<AIAutomation />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

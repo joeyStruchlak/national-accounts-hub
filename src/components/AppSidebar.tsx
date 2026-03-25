@@ -6,6 +6,7 @@ import {
   DollarSign,
   ShieldCheck,
   Users,
+  Zap,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -29,7 +30,9 @@ const navItems = [
   { title: "Payroll Rec", url: "/payroll-rec", icon: DollarSign },
   { title: "Super Rec", url: "/super-rec", icon: ShieldCheck },
   { title: "Client Records", url: "/clients", icon: Users },
+  { title: "AI Automation", url: "/automation", icon: Zap, hasNotification: true },
 ];
+
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -79,7 +82,12 @@ export function AppSidebar() {
                         }`}
                         activeClassName="bg-sidebar-accent text-accent"
                       >
-                        <item.icon className="h-4 w-4 shrink-0" />
+                        <div className="relative">
+                          <item.icon className="h-4 w-4 shrink-0" />
+                          {"hasNotification" in item && item.hasNotification && !active && (
+                            <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive" />
+                          )}
+                        </div>
                         {!collapsed && <span>{item.title}</span>}
                       </NavLink>
                     </SidebarMenuButton>
