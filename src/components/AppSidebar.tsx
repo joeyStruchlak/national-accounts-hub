@@ -29,7 +29,9 @@ const navItems = [
   { title: "Payroll Rec", url: "/payroll-rec", icon: DollarSign },
   { title: "Super Rec", url: "/super-rec", icon: ShieldCheck },
   { title: "Client Records", url: "/clients", icon: Users },
+  { title: "AI Automation", url: "/automation", icon: Zap, hasNotification: true },
 ];
+
 
 export function AppSidebar() {
   const { state } = useSidebar();

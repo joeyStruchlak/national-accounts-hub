@@ -29,6 +29,7 @@ const App = () => (
           <Route path="/payroll-rec" element={<PayrollRec />} />
           <Route path="/super-rec" element={<SuperRec />} />
           <Route path="/clients" element={<ClientRecords />} />
+          <Route path="/automation" element={<AIAutomation />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
