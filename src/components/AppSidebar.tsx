@@ -19,6 +19,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import logoSrc from "@/assets/logo.png";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -37,19 +38,21 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
-      <div className="flex h-16 items-center gap-2 px-4 border-b border-sidebar-border">
+      <div className="flex h-16 items-center gap-3 px-4 border-b border-sidebar-border">
+        <img
+          src={logoSrc}
+          alt="National Accounts"
+          className={collapsed ? "h-8 w-8 object-contain" : "h-10 w-10 object-contain"}
+        />
         {!collapsed && (
           <div className="flex flex-col">
-            <span className="text-sm font-bold text-sidebar-primary-foreground tracking-wide">
+            <span className="font-display text-[13px] font-semibold text-sidebar-primary-foreground tracking-wide leading-tight">
               National Accounts
             </span>
-            <span className="text-[10px] font-medium text-sidebar-primary tracking-widest uppercase">
+            <span className="text-[9px] font-semibold text-accent tracking-[0.2em] uppercase">
               Internal Portal
             </span>
           </div>
-        )}
-        {collapsed && (
-          <span className="text-lg font-bold text-sidebar-primary">NA</span>
         )}
       </div>
 
@@ -69,8 +72,12 @@ export function AppSidebar() {
                       <NavLink
                         to={item.url}
                         end
-                        className="transition-colors"
-                        activeClassName="bg-sidebar-accent text-sidebar-primary"
+                        className={`transition-colors relative ${
+                          active
+                            ? "bg-sidebar-accent text-accent border-l-2 border-accent"
+                            : "text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+                        }`}
+                        activeClassName="bg-sidebar-accent text-accent"
                       >
                         <item.icon className="h-4 w-4 shrink-0" />
                         {!collapsed && <span>{item.title}</span>}
