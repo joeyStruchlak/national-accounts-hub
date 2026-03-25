@@ -10,6 +10,7 @@ import Productivity from "./pages/Productivity";
 import PayrollRec from "./pages/PayrollRec";
 import SuperRec from "./pages/SuperRec";
 import ClientRecords from "./pages/ClientRecords";
+import AIAutomation from "./pages/AIAutomation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
