@@ -2,13 +2,13 @@ import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 import { AIStatusBadge } from "@/components/AIStatusBadge";
+import { StatusBadge } from "@/components/StatusBadge";
 import {
   Users,
   Briefcase,
   AlertTriangle,
   TrendingUp,
   Clock,
-  CheckCircle2,
 } from "lucide-react";
 
 const stats = [
@@ -35,14 +35,20 @@ const teamCapacity = [
   { name: "Michael R.", utilisation: 45, jobs: 12 },
 ];
 
-function CapacityBar({ value }: { value: number }) {
-  const color = value >= 85 ? "bg-destructive" : value >= 70 ? "bg-warning" : "bg-success";
+function CapacityBar({ value, name }: { value: number; name: string }) {
+  const isOverloaded = value >= 85;
+  const isAmber = value >= 70 && value < 85;
+  const color = isOverloaded ? "bg-destructive" : isAmber ? "bg-warning" : "bg-success";
+
   return (
     <div className="flex items-center gap-3">
-      <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
-        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${value}%` }} />
+      <div className="h-2 flex-1 rounded-sm bg-muted overflow-hidden">
+        <div className={`h-full rounded-sm transition-all ${color}`} style={{ width: `${value}%` }} />
       </div>
-      <span className="text-xs font-medium text-muted-foreground w-8 text-right">{value}%</span>
+      <span className={`text-xs font-semibold w-12 text-right flex items-center justify-end gap-1 ${isOverloaded ? "text-destructive" : "text-muted-foreground"}`}>
+        {isOverloaded && <AlertTriangle className="h-3 w-3 text-destructive" />}
+        {value}%
+      </span>
     </div>
   );
 }
@@ -54,16 +60,16 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
-          <Card key={s.label} className="shadow-premium border-border">
+          <Card key={s.label} className="shadow-premium border-border border-t-2 border-t-accent overflow-hidden">
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{s.label}</p>
-                  <p className="mt-1 text-3xl font-bold text-accent">{s.value}</p>
+                  <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{s.label}</p>
+                  <p className="mt-1 text-3xl font-bold text-primary">{s.value}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{s.change}</p>
                 </div>
-                <div className="rounded-lg gradient-navy p-2.5">
-                  <s.icon className="h-5 w-5 text-accent" />
+                <div className="rounded p-2 border border-accent/30 bg-accent/5">
+                  <s.icon className="h-5 w-5 text-accent" strokeWidth={1.5} />
                 </div>
               </div>
             </CardContent>
@@ -77,9 +83,9 @@ export default function Dashboard() {
             <CardTitle className="text-lg">Recent Jobs</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {recentJobs.map((job) => (
-                <div key={job.client} className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                <div key={job.client} className="flex items-center justify-between rounded border p-3 hover:bg-muted/50 transition-colors">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{job.client}</p>
                     <p className="text-xs text-muted-foreground">{job.type} · {job.staff}</p>
@@ -106,10 +112,10 @@ export default function Dashboard() {
               {teamCapacity.map((t) => (
                 <div key={t.name}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium">{t.name}</span>
+                    <span className={`text-sm font-medium ${t.utilisation >= 85 ? "text-destructive" : ""}`}>{t.name}</span>
                     <span className="text-xs text-muted-foreground">{t.jobs} jobs</span>
                   </div>
-                  <CapacityBar value={t.utilisation} />
+                  <CapacityBar value={t.utilisation} name={t.name} />
                 </div>
               ))}
             </div>
