@@ -38,7 +38,7 @@ const teamCapacity = [
 function CapacityBar({ value, name }: { value: number; name: string }) {
   const isOverloaded = value >= 85;
   const isAmber = value >= 70 && value < 85;
-  const color = isOverloaded ? "bg-destructive" : isAmber ? "bg-warning" : "bg-success";
+  const color = isOverloaded ? "bg-destructive" : isAmber ? "bg-warning" : "bg-accent";
 
   return (
     <div className="flex items-center gap-3">
@@ -60,7 +60,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
-          <Card key={s.label} className="shadow-premium border-border border-t-2 border-t-accent overflow-hidden">
+          <Card key={s.label} className="shadow-premium border-border border-t-2 border-t-warning overflow-hidden">
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
@@ -68,8 +68,8 @@ export default function Dashboard() {
                   <p className="mt-1 text-3xl font-bold text-primary">{s.value}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{s.change}</p>
                 </div>
-                <div className="rounded p-2 border border-accent/30 bg-accent/5">
-                  <s.icon className="h-5 w-5 text-accent" strokeWidth={1.5} />
+                <div className="rounded p-2 border border-warning/30 bg-warning/5">
+                  <s.icon className="h-5 w-5 text-warning" strokeWidth={1.5} />
                 </div>
               </div>
             </CardContent>

@@ -9,14 +9,14 @@ type StatusBadgeProps = {
 const variantMap: Record<string, string> = {
   "Pending Review": "bg-warning/10 text-warning border-warning/20",
   "Flagged": "bg-destructive/10 text-destructive border-destructive/20 animate-pulse-glow",
-  "Cleared": "bg-success/10 text-success border-success/20",
+  "Cleared": "bg-accent/10 text-accent border-accent/20",
   "In Progress": "bg-accent/10 text-accent border-accent/20",
-  "Completed": "bg-success/10 text-success border-success/20",
+  "Completed": "bg-accent/10 text-accent border-accent/20",
   "Overdue": "bg-destructive/10 text-destructive border-destructive/20",
-  "Reconciled": "bg-success/10 text-success border-success/20",
+  "Reconciled": "bg-accent/10 text-accent border-accent/20",
   "Outstanding": "bg-warning/10 text-warning border-warning/20",
   "Discrepancy": "bg-destructive/10 text-destructive border-destructive/20",
-  "Compliant": "bg-success/10 text-success border-success/20",
+  "Compliant": "bg-accent/10 text-accent border-accent/20",
   "Non-Compliant": "bg-destructive/10 text-destructive border-destructive/20",
 };
 

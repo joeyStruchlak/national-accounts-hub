@@ -62,7 +62,7 @@ export default function PayrollRec() {
                 <TableCell className="font-medium">{r.client}</TableCell>
                 <TableCell className="text-muted-foreground">{r.period}</TableCell>
                 <TableCell><StatusBadge status={r.status} /></TableCell>
-                <TableCell className="font-semibold text-success">{r.reconciled}</TableCell>
+                <TableCell className="font-semibold text-accent">{r.reconciled}</TableCell>
                 <TableCell className={r.outstanding > 0 ? "font-semibold text-warning" : "text-muted-foreground"}>{r.outstanding}</TableCell>
                 <TableCell className={r.discrepancies > 0 ? "font-semibold text-destructive" : "text-muted-foreground"}>{r.discrepancies}</TableCell>
                 <TableCell><AIStatusBadge status={r.aiStatus} /></TableCell>

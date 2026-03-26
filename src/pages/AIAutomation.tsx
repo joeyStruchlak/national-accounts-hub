@@ -182,13 +182,13 @@ export default function AIAutomation() {
           return (
             <Card
               key={a.key}
-              className="shadow-premium-lg border-border border-t-2 border-t-accent relative overflow-hidden flex flex-col"
+              className="shadow-premium-lg border-border border-t-2 border-t-warning relative overflow-hidden flex flex-col"
             >
               <CardContent className="p-6 flex flex-col flex-1">
                 {/* Icon + Title */}
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="rounded-lg p-3 border border-accent/30 bg-accent/5">
-                    <a.icon className="h-7 w-7 text-accent" strokeWidth={1.5} />
+                  <div className="rounded-lg p-3 border border-warning/30 bg-warning/5">
+                    <a.icon className="h-7 w-7 text-warning" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-bold text-primary leading-tight">{a.title}</h3>
@@ -205,7 +205,7 @@ export default function AIAutomation() {
                 <Button
                   onClick={() => runAutomation(a.key)}
                   disabled={state.running}
-                  className="w-full gradient-green text-accent-foreground font-semibold h-11 text-sm hover:opacity-90 mb-4"
+                  className="w-full gradient-amber text-primary font-semibold h-11 text-sm hover:opacity-90 mb-4"
                 >
                   {state.running ? (
                     <>
@@ -233,7 +233,7 @@ export default function AIAutomation() {
                   <Button
                     variant="outline"
                     onClick={() => setReportModal({ open: true, type: a.key })}
-                    className="w-full border-accent text-accent hover:bg-accent/10 font-semibold mb-4"
+                    className="w-full border-primary text-warning hover:bg-primary/5 font-semibold mb-4"
                   >
                     <FileText className="mr-2 h-4 w-4" />
                     View Full Report
@@ -245,11 +245,13 @@ export default function AIAutomation() {
                   <span
                     className={cn(
                       "h-2 w-2 rounded-full shrink-0",
-                      a.connected ? "bg-success animate-pulse" : "bg-muted-foreground"
+                      a.connected ? "bg-accent animate-pulse" : "bg-muted-foreground"
                     )}
                   />
                   <span className="text-[10px] text-muted-foreground">
-                    {a.connected ? "Connected to Xero OAuth 2.0" : "Disconnected"}
+                    <span className={a.connected ? "text-accent" : ""}>
+                      {a.connected ? "Connected to Xero OAuth 2.0" : "Disconnected"}
+                    </span>
                   </span>
                 </div>
 
@@ -259,13 +261,13 @@ export default function AIAutomation() {
                   <span
                     className={cn(
                       "inline-flex items-center gap-1 text-[11px] font-semibold",
-                      a.lastResultType === "success" ? "text-success" : "text-warning"
+                      a.lastResultType === "success" ? "text-accent" : "text-warning"
                     )}
                   >
                     <span
                       className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        a.lastResultType === "success" ? "bg-success" : "bg-warning"
+                        a.lastResultType === "success" ? "bg-accent" : "bg-warning"
                       )}
                     />
                     {a.lastResult}
@@ -319,7 +321,7 @@ export default function AIAutomation() {
                     <TableCell className="text-sm text-muted-foreground">{entry.dateTime}</TableCell>
                     <TableCell className="text-sm text-right font-semibold">{entry.records}</TableCell>
                     <TableCell className="text-sm text-right">
-                      <span className={cn("font-semibold", entry.issues > 0 ? "text-warning" : "text-success")}>
+                      <span className={cn("font-semibold", entry.issues > 0 ? "text-warning" : "text-accent")}>
                         {entry.issues}
                       </span>
                     </TableCell>

@@ -63,7 +63,7 @@ export default function SuperRec() {
                 <TableCell className="text-muted-foreground">{r.period}</TableCell>
                 <TableCell><StatusBadge status={r.sgaStatus} /></TableCell>
                 <TableCell>{r.employees}</TableCell>
-                <TableCell className="font-semibold text-success">{r.reconciled}</TableCell>
+                <TableCell className="font-semibold text-accent">{r.reconciled}</TableCell>
                 <TableCell className={r.outstanding > 0 ? "font-semibold text-warning" : "text-muted-foreground"}>{r.outstanding}</TableCell>
                 <TableCell><AIStatusBadge status={r.aiStatus} /></TableCell>
               </TableRow>

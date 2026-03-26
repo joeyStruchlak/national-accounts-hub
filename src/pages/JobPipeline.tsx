@@ -73,7 +73,7 @@ export default function JobPipeline() {
                             ? "bg-destructive/10 text-destructive"
                             : job.daysInStage > 3
                             ? "bg-warning/10 text-warning"
-                            : "bg-success/10 text-success"
+                            : "bg-accent/10 text-accent"
                         )}
                       >
                         {job.daysInStage}d
