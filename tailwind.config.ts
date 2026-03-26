@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
-        display: ["Playfair Display", "Georgia", "serif"],
+        sans: ["Roboto", "system-ui", "-apple-system", "sans-serif"],
+        display: ["Manrope", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -63,10 +63,13 @@ export default {
           DEFAULT: "hsl(var(--navy))",
           light: "hsl(var(--navy-light))",
         },
-        "green-cta": {
-          DEFAULT: "hsl(var(--green-cta))",
-          light: "hsl(var(--green-cta-light))",
-          dark: "hsl(var(--green-cta-dark))",
+        teal: {
+          DEFAULT: "hsl(var(--teal))",
+          dark: "hsl(var(--teal-dark))",
+        },
+        amber: {
+          DEFAULT: "hsl(var(--amber))",
+          dark: "hsl(var(--amber-dark))",
         },
         "slate-body": "hsl(var(--slate-body))",
         "section-bg": "hsl(var(--section-bg))",

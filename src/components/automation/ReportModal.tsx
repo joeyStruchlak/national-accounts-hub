@@ -158,7 +158,7 @@ export function ReportModal({ open, onOpenChange, type, report }: ReportModalPro
 
         {/* Export Button */}
         <div className="mt-5 flex justify-end">
-          <Button className="gradient-green text-accent-foreground font-semibold">
+          <Button className="gradient-amber text-primary font-semibold">
             <Download className="mr-2 h-4 w-4" />
             Export to PDF
           </Button>

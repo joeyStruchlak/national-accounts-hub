@@ -6,7 +6,7 @@ type AIStatusProps = {
 };
 
 const statusConfig = {
-  cleared: { label: "Cleared", dotClass: "bg-success" },
+  cleared: { label: "Cleared", dotClass: "bg-accent" },
   review: { label: "Needs Review", dotClass: "bg-warning" },
   flagged: { label: "Flagged", dotClass: "bg-destructive" },
 };
@@ -17,7 +17,7 @@ export function AIStatusBadge({ status, className }: AIStatusProps) {
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
-        status === "cleared" && "bg-success/10 text-success",
+        status === "cleared" && "bg-accent/10 text-accent",
         status === "review" && "bg-warning/10 text-warning",
         status === "flagged" && "bg-destructive/10 text-destructive",
         className

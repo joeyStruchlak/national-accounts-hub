@@ -52,7 +52,7 @@ export function AppSidebar() {
             <span className="font-display text-[13px] font-semibold text-sidebar-primary-foreground tracking-wide leading-tight">
               National Accounts
             </span>
-            <span className="text-[9px] font-semibold text-accent tracking-[0.2em] uppercase">
+            <span className="text-[9px] font-semibold text-warning tracking-[0.2em] uppercase">
               Internal Portal
             </span>
           </div>

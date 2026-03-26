@@ -18,7 +18,7 @@ export function OnboardingBanner({ onConnect }: OnboardingBannerProps) {
           payroll reconciliations and productivity reports in seconds.
         </p>
       </div>
-      <Button className="gradient-green text-accent-foreground font-semibold h-11 px-6 shrink-0">
+      <Button className="gradient-amber text-primary font-semibold h-11 px-6 shrink-0">
         Connect Xero
       </Button>
     </div>

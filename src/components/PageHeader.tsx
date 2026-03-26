@@ -43,7 +43,7 @@ export function PageHeader({
         {onExport && (
           <Button
             onClick={onExport}
-            className="gradient-green text-accent-foreground hover:opacity-90"
+            className="gradient-amber text-primary font-semibold hover:opacity-90"
           >
             <Download className="mr-2 h-4 w-4" />
             Export
