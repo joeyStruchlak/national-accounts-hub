@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronUp,
   Lock,
+  FileText,
 } from "lucide-react";
 import {
   Table,
@@ -22,6 +23,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { OrchestrationFlow } from "@/components/automation/OrchestrationFlow";
+import { ReportModal } from "@/components/automation/ReportModal";
+import { AuditTrailPanel } from "@/components/automation/AuditTrailPanel";
+import { OnboardingBanner } from "@/components/automation/OnboardingBanner";
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -51,16 +56,16 @@ type RunState = {
 /* Mock history data                                                   */
 /* ------------------------------------------------------------------ */
 const initialHistory: HistoryEntry[] = [
-  { id: "1", type: "bas", label: "BAS / GST Review", runBy: "Sarah M.", dateTime: "24 Mar 2026 · 09:15am", records: 287, issues: 12, status: "Issues Found", report: "12 GST miscoding issues detected across 8 clients. 3 missing tax codes on Meridian Property Group. 2 BAS lodgement dates flagged as at risk. Recommended: manual review of flagged items before lodgement." },
-  { id: "2", type: "payroll", label: "Payroll Reconciliation", runBy: "James T.", dateTime: "23 Mar 2026 · 02:30pm", records: 142, issues: 0, status: "Completed", report: "All 142 payroll records reconciled successfully. No discrepancies between bank transactions and payroll module. STP lodgements verified." },
-  { id: "3", type: "productivity", label: "Weekly Productivity Report", runBy: "Emma L.", dateTime: "21 Mar 2026 · 08:00am", records: 16, issues: 3, status: "Issues Found", report: "3 staff members below 60% utilisation target. Michael R. at 45% — requires attention. Revenue on track at $285k against $300k monthly target. 23 overdue items, down from 28 last week." },
-  { id: "4", type: "bas", label: "BAS / GST Review", runBy: "Sarah M.", dateTime: "17 Mar 2026 · 09:10am", records: 295, issues: 8, status: "Issues Found", report: "8 issues across 5 clients. GST-free supplies miscoded as taxable on 3 records. Coastal Builders Pty Ltd has recurring miscoding pattern — recommend client advisory." },
-  { id: "5", type: "payroll", label: "Payroll Reconciliation", runBy: "James T.", dateTime: "16 Mar 2026 · 02:30pm", records: 140, issues: 2, status: "Issues Found", report: "2 discrepancies found. Blue Ocean Imports — $1,240 variance between bank and payroll. Harbour View Dental — super guarantee shortfall of $380. Both flagged for manual review." },
-  { id: "6", type: "productivity", label: "Weekly Productivity Report", runBy: "Emma L.", dateTime: "14 Mar 2026 · 08:05am", records: 16, issues: 0, status: "Completed", report: "All staff within utilisation targets. Revenue at $310k — above monthly target. 28 overdue items. Team capacity well-balanced." },
-  { id: "7", type: "bas", label: "BAS / GST Review", runBy: "David K.", dateTime: "10 Mar 2026 · 09:20am", records: 280, issues: 0, status: "Completed", report: "All 280 returns reviewed. No coding errors detected. All tax codes correctly applied. Ready for lodgement." },
-  { id: "8", type: "payroll", label: "Payroll Reconciliation", runBy: "James T.", dateTime: "9 Mar 2026 · 02:35pm", records: 138, issues: 0, status: "Completed", report: "Clean reconciliation across all clients. No variances detected." },
-  { id: "9", type: "bas", label: "BAS / GST Review", runBy: "Sarah M.", dateTime: "3 Mar 2026 · 09:12am", records: 292, issues: 15, status: "Issues Found", report: "15 issues — highest count this quarter. Recommend team training session on GST coding. Top offenders: Meridian (5), Coastal Builders (4), Sydney Tech (3)." },
-  { id: "10", type: "productivity", label: "Weekly Productivity Report", runBy: "Lisa P.", dateTime: "28 Feb 2026 · 08:00am", records: 16, issues: 1, status: "Completed", report: "1 staff member flagged — Michael R. at 52%. All others above 65%. Revenue tracking at $275k." },
+  { id: "1", type: "bas", label: "BAS / GST Review", runBy: "Sarah M.", dateTime: "24 Mar 2026 · 09:15am", records: 287, issues: 12, status: "Issues Found", report: "12 GST miscoding issues detected across 8 clients." },
+  { id: "2", type: "payroll", label: "Payroll Reconciliation", runBy: "James T.", dateTime: "23 Mar 2026 · 02:30pm", records: 142, issues: 0, status: "Completed", report: "All 142 payroll records reconciled successfully." },
+  { id: "3", type: "productivity", label: "Weekly Productivity Report", runBy: "Emma L.", dateTime: "21 Mar 2026 · 08:00am", records: 16, issues: 3, status: "Issues Found", report: "3 staff members below 60% utilisation target." },
+  { id: "4", type: "bas", label: "BAS / GST Review", runBy: "Sarah M.", dateTime: "17 Mar 2026 · 09:10am", records: 295, issues: 8, status: "Issues Found", report: "8 issues across 5 clients." },
+  { id: "5", type: "payroll", label: "Payroll Reconciliation", runBy: "James T.", dateTime: "16 Mar 2026 · 02:30pm", records: 140, issues: 2, status: "Issues Found", report: "2 discrepancies found." },
+  { id: "6", type: "productivity", label: "Weekly Productivity Report", runBy: "Emma L.", dateTime: "14 Mar 2026 · 08:05am", records: 16, issues: 0, status: "Completed", report: "All staff within utilisation targets." },
+  { id: "7", type: "bas", label: "BAS / GST Review", runBy: "David K.", dateTime: "10 Mar 2026 · 09:20am", records: 280, issues: 0, status: "Completed", report: "All 280 returns reviewed. No coding errors detected." },
+  { id: "8", type: "payroll", label: "Payroll Reconciliation", runBy: "James T.", dateTime: "9 Mar 2026 · 02:35pm", records: 138, issues: 0, status: "Completed", report: "Clean reconciliation across all clients." },
+  { id: "9", type: "bas", label: "BAS / GST Review", runBy: "Sarah M.", dateTime: "3 Mar 2026 · 09:12am", records: 292, issues: 15, status: "Issues Found", report: "15 issues — highest count this quarter." },
+  { id: "10", type: "productivity", label: "Weekly Productivity Report", runBy: "Lisa P.", dateTime: "28 Feb 2026 · 08:00am", records: 16, issues: 1, status: "Completed", report: "1 staff member flagged." },
 ];
 
 const phases: Record<AutomationType, string[]> = {
@@ -70,9 +75,9 @@ const phases: Record<AutomationType, string[]> = {
 };
 
 const reportOutputs: Record<AutomationType, string> = {
-  bas: "Review complete. 287 returns analysed. 12 GST miscoding issues detected across 8 clients. 3 missing tax codes flagged on Meridian Property Group. 2 BAS lodgement dates at risk. All flagged items require manual review before lodgement.",
-  payroll: "Reconciliation complete. 142 payroll records checked. All bank transactions matched against payroll module figures. No discrepancies detected. STP lodgements verified and compliant.",
-  productivity: "Report generated. 16 staff reviewed. Average utilisation: 78%. 3 staff below target (Michael R. 45%, David K. 65%, Emma L. 78%). Weekly revenue: $71,250. 23 overdue items. Partner summary ready for download.",
+  bas: "Review complete. 287 returns analysed. 12 GST miscoding issues detected across 8 clients.",
+  payroll: "Reconciliation complete. 142 payroll records checked. No discrepancies detected.",
+  productivity: "Report generated. 16 staff reviewed. Average utilisation: 78%.",
 };
 
 /* ------------------------------------------------------------------ */
@@ -88,6 +93,7 @@ const automations = [
     lastRun: "24 Mar 2026 · 09:15am",
     lastResult: "12 issues found",
     lastResultType: "warning" as const,
+    connected: true,
   },
   {
     key: "payroll" as AutomationType,
@@ -98,6 +104,7 @@ const automations = [
     lastRun: "23 Mar 2026 · 02:30pm",
     lastResult: "All clear",
     lastResultType: "success" as const,
+    connected: true,
   },
   {
     key: "productivity" as AutomationType,
@@ -108,6 +115,7 @@ const automations = [
     lastRun: "21 Mar 2026 · 08:00am",
     lastResult: "3 staff flagged",
     lastResultType: "warning" as const,
+    connected: true,
   },
 ];
 
@@ -121,6 +129,11 @@ export default function AIAutomation() {
     productivity: { running: false, phase: "", done: false, report: null },
   });
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [reportModal, setReportModal] = useState<{ open: boolean; type: AutomationType | null }>({
+    open: false,
+    type: null,
+  });
 
   const runAutomation = useCallback((type: AutomationType) => {
     const steps = phases[type];
@@ -144,12 +157,17 @@ export default function AIAutomation() {
   return (
     <AppLayout>
       {/* Security banner */}
-      <div className="mb-6 rounded border border-accent/20 bg-primary px-5 py-3 flex items-center gap-3">
+      <div className="mb-6 rounded-md border border-accent/20 bg-primary px-5 py-3 flex items-center gap-3">
         <Lock className="h-4 w-4 text-accent shrink-0" />
         <p className="text-xs text-accent font-medium tracking-wide">
           All automation runs are logged and audited. Data processed securely via Xero OAuth 2.0. Australian data sovereignty maintained.
         </p>
       </div>
+
+      {/* Onboarding Banner */}
+      {showOnboarding && (
+        <OnboardingBanner onConnect={() => setShowOnboarding(false)} />
+      )}
 
       {/* Header */}
       <div className="mb-8">
@@ -179,7 +197,7 @@ export default function AIAutomation() {
                 </div>
 
                 {/* Stat */}
-                <div className="rounded border border-border bg-muted/40 px-3 py-2 mb-4">
+                <div className="rounded-md border border-border bg-muted/40 px-3 py-2 mb-4">
                   <p className="text-xs font-semibold text-primary/80">{a.stat}</p>
                 </div>
 
@@ -204,19 +222,36 @@ export default function AIAutomation() {
 
                 {/* Running phase */}
                 {state.running && (
-                  <div className="rounded border border-accent/20 bg-accent/5 px-4 py-3 mb-4 flex items-center gap-3">
+                  <div className="rounded-md border border-accent/20 bg-accent/5 px-4 py-3 mb-4 flex items-center gap-3">
                     <Loader2 className="h-4 w-4 text-accent animate-spin shrink-0" />
                     <p className="text-sm font-medium text-primary animate-pulse">{state.phase}</p>
                   </div>
                 )}
 
-                {/* Report output */}
+                {/* View Full Report button */}
                 {state.done && state.report && (
-                  <div className="rounded border border-success/30 bg-success/5 px-4 py-3 mb-4">
-                    <p className="text-xs font-semibold text-success mb-1">✓ Complete</p>
-                    <p className="text-sm text-foreground leading-relaxed">{state.report}</p>
-                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setReportModal({ open: true, type: a.key })}
+                    className="w-full border-accent text-accent hover:bg-accent/10 font-semibold mb-4"
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    View Full Report
+                  </Button>
                 )}
+
+                {/* Xero connection status */}
+                <div className="flex items-center gap-2 mb-3">
+                  <span
+                    className={cn(
+                      "h-2 w-2 rounded-full shrink-0",
+                      a.connected ? "bg-success animate-pulse" : "bg-muted-foreground"
+                    )}
+                  />
+                  <span className="text-[10px] text-muted-foreground">
+                    {a.connected ? "Connected to Xero OAuth 2.0" : "Disconnected"}
+                  </span>
+                </div>
 
                 {/* Last run indicator */}
                 <div className="mt-auto pt-3 border-t border-border flex items-center justify-between">
@@ -241,6 +276,17 @@ export default function AIAutomation() {
           );
         })}
       </div>
+
+      {/* Orchestration Flow */}
+      <OrchestrationFlow runStates={runStates} />
+
+      {/* Report Modal */}
+      <ReportModal
+        open={reportModal.open}
+        onOpenChange={(open) => setReportModal({ ...reportModal, open })}
+        type={reportModal.type}
+        report={reportModal.type ? runStates[reportModal.type].report : null}
+      />
 
       {/* Automation History */}
       <Card className="shadow-premium border-border">
@@ -302,6 +348,9 @@ export default function AIAutomation() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Audit Trail */}
+      <AuditTrailPanel />
     </AppLayout>
   );
 }
