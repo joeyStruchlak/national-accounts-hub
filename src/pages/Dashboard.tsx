@@ -38,7 +38,7 @@ const teamCapacity = [
 function CapacityBar({ value, name }: { value: number; name: string }) {
   const isOverloaded = value >= 85;
   const isAmber = value >= 70 && value < 85;
-  const color = isOverloaded ? "bg-destructive" : isAmber ? "bg-warning" : "bg-success";
+  const color = isOverloaded ? "bg-destructive" : isAmber ? "bg-warning" : "bg-accent";
 
   return (
     <div className="flex items-center gap-3">
