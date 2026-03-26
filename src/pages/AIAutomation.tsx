@@ -261,13 +261,13 @@ export default function AIAutomation() {
                   <span
                     className={cn(
                       "inline-flex items-center gap-1 text-[11px] font-semibold",
-                      a.lastResultType === "success" ? "text-success" : "text-warning"
+                      a.lastResultType === "success" ? "text-accent" : "text-warning"
                     )}
                   >
                     <span
                       className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        a.lastResultType === "success" ? "bg-success" : "bg-warning"
+                        a.lastResultType === "success" ? "bg-accent" : "bg-warning"
                       )}
                     />
                     {a.lastResult}
@@ -321,7 +321,7 @@ export default function AIAutomation() {
                     <TableCell className="text-sm text-muted-foreground">{entry.dateTime}</TableCell>
                     <TableCell className="text-sm text-right font-semibold">{entry.records}</TableCell>
                     <TableCell className="text-sm text-right">
-                      <span className={cn("font-semibold", entry.issues > 0 ? "text-warning" : "text-success")}>
+                      <span className={cn("font-semibold", entry.issues > 0 ? "text-warning" : "text-accent")}>
                         {entry.issues}
                       </span>
                     </TableCell>

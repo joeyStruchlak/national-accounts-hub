@@ -24,7 +24,7 @@ const teamData = [
 ];
 
 function CapacityBar({ value }: { value: number }) {
-  const color = value >= 85 ? "bg-destructive" : value >= 70 ? "bg-warning" : "bg-success";
+  const color = value >= 85 ? "bg-destructive" : value >= 70 ? "bg-warning" : "bg-accent";
   return (
     <div className="flex items-center gap-3 w-32">
       <div className="h-2.5 flex-1 rounded-full bg-muted overflow-hidden">
@@ -38,7 +38,7 @@ const capacityLabel = (c: string) => {
   const map: Record<string, { label: string; class: string }> = {
     overloaded: { label: "Overloaded", class: "bg-destructive/10 text-destructive" },
     high: { label: "High", class: "bg-warning/10 text-warning" },
-    optimal: { label: "Optimal", class: "bg-success/10 text-success" },
+    optimal: { label: "Optimal", class: "bg-accent/10 text-accent" },
     available: { label: "Available", class: "bg-accent/10 text-accent" },
     underutilised: { label: "Underutilised", class: "bg-muted text-muted-foreground" },
   };

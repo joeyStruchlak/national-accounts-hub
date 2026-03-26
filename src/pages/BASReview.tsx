@@ -91,7 +91,7 @@ export default function BASReview() {
                   {r.aiFlags > 0 ? (
                     <span className="text-sm font-semibold text-destructive">{r.aiFlags} issues</span>
                   ) : (
-                    <span className="text-sm text-success">None</span>
+                    <span className="text-sm text-accent">None</span>
                   )}
                 </TableCell>
                 <TableCell><AIStatusBadge status={r.aiStatus} /></TableCell>
