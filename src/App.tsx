@@ -11,7 +11,10 @@ import PayrollRec from "./pages/PayrollRec";
 import SuperRec from "./pages/SuperRec";
 import ClientRecords from "./pages/ClientRecords";
 import AIAutomation from "./pages/AIAutomation";
+import Login from "./pages/login";
+import Terms from "./pages/terms";
 import NotFound from "./pages/NotFound";
+import { AuthGuard } from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -22,14 +25,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/bas-review" element={<BASReview />} />
-          <Route path="/job-pipeline" element={<JobPipeline />} />
-          <Route path="/productivity" element={<Productivity />} />
-          <Route path="/payroll-rec" element={<PayrollRec />} />
-          <Route path="/super-rec" element={<SuperRec />} />
-          <Route path="/clients" element={<ClientRecords />} />
-          <Route path="/automation" element={<AIAutomation />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/bas-review" element={<AuthGuard><BASReview /></AuthGuard>} />
+          <Route path="/job-pipeline" element={<AuthGuard><JobPipeline /></AuthGuard>} />
+          <Route path="/productivity" element={<AuthGuard><Productivity /></AuthGuard>} />
+          <Route path="/payroll-rec" element={<AuthGuard><PayrollRec /></AuthGuard>} />
+          <Route path="/super-rec" element={<AuthGuard><SuperRec /></AuthGuard>} />
+          <Route path="/clients" element={<AuthGuard><ClientRecords /></AuthGuard>} />
+          <Route path="/automation" element={<AuthGuard><AIAutomation /></AuthGuard>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

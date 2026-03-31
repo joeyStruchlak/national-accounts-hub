@@ -7,10 +7,19 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, AlertTriangle, CheckCircle2, Info } from "lucide-react";
+import {
+  Download,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  Mail,
+  FileSpreadsheet,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import html2pdf from "html2pdf.js";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import * as XLSX from "xlsx";
 
 interface FlaggedItem {
   item: string;
@@ -34,7 +43,7 @@ interface RealData {
 interface ReportModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  type: "bas" | "payroll" | "productivity" | null;
+  type: "bas" | "payroll" | "productivity" | "super" | "financial" | null;
   report: string | null;
   realData?: RealData | null;
 }
@@ -54,6 +63,22 @@ const severityConfig = {
   },
 };
 
+const staffEmails = [
+  { name: "Jon Wilczynski (Partner)", email: "jon@nationalaccounts.com.au" },
+  {
+    name: "Mike Wilczynski (Tech Lead)",
+    email: "mike@nationalaccounts.com.au",
+  },
+  {
+    name: "Sarah M. (Senior Accountant)",
+    email: "sarah.m@nationalaccounts.com.au",
+  },
+  { name: "James T. (Payroll)", email: "james.t@nationalaccounts.com.au" },
+  { name: "Emma L. (Manager)", email: "emma.l@nationalaccounts.com.au" },
+  { name: "David K. (Senior)", email: "david.k@nationalaccounts.com.au" },
+  { name: "Lisa P. (Accountant)", email: "lisa.p@nationalaccounts.com.au" },
+];
+
 export function ReportModal({
   open,
   onOpenChange,
@@ -62,37 +87,29 @@ export function ReportModal({
   realData,
 }: ReportModalProps) {
   const reportRef = useRef<HTMLDivElement>(null);
+  const [showEmailDropdown, setShowEmailDropdown] = useState(false);
+  const [emailSent, setEmailSent] = useState<string | null>(null);
 
   if (!type) return null;
 
   const isRealData = !!(
     realData &&
-    (type === "bas" || type === "productivity" || type === "payroll")
+    (type === "bas" ||
+      type === "productivity" ||
+      type === "payroll" ||
+      type === "super" ||
+      type === "financial")
   );
+
   const aiAnalysis = realData?.aiAnalysis || null;
 
   const title = {
     bas: "BAS / GST Review Report",
     payroll: "Payroll Reconciliation Report",
     productivity: "Weekly Productivity Report",
+    super: "Super Reconciliation Report",
+    financial: "Financial Review Report",
   }[type];
-
-  const handleExport = () => {
-    const element = reportRef.current;
-    if (!element) return;
-
-    const opt = {
-      margin: [10, 10, 10, 10] as [number, number, number, number],
-      filename: `${title.replace(/ /g, "_")}_${
-        new Date().toISOString().split("T")[0]
-      }.pdf`,
-      image: { type: "jpeg", quality: 0.98 } as const, // Add 'as const' here
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" } as const, // Good practice to add here too
-    };
-
-    html2pdf().set(opt).from(element).save();
-  };
 
   const summary = isRealData
     ? type === "productivity"
@@ -131,7 +148,42 @@ export function ReportModal({
             }`,
           },
         ]
+      : type === "super"
+      ? [
+          {
+            label: "Employees Reviewed",
+            value: String(realData!.totalReviewed),
+          },
+          {
+            label: "Super Liability",
+            value: `$${
+              realData!.extraData?.totalOutstanding?.toFixed(0) || "0"
+            }`,
+          },
+          {
+            label: "Super Paid",
+            value: `$${realData!.extraData?.totalPaid?.toFixed(0) || "0"}`,
+          },
+          {
+            label: "Compliant",
+            value: realData!.totalIssues === 0 ? "✓ Yes" : "✗ No",
+          },
+        ]
+      : type === "financial"
+      ? [
+          { label: "Records Reviewed", value: String(realData!.totalReviewed) },
+          {
+            label: "Revenue",
+            value: `$${realData!.extraData?.totalInvoiced?.toFixed(0) || "0"}`,
+          },
+          {
+            label: "Gross Profit",
+            value: `$${realData!.extraData?.totalPaid?.toFixed(0) || "0"}`,
+          },
+          { label: "Issues Found", value: String(realData!.totalIssues) },
+        ]
       : [
+          // Default for BAS
           {
             label: "Transactions Reviewed",
             value: String(realData!.totalReviewed),
@@ -161,6 +213,20 @@ export function ReportModal({
         { label: "Discrepancies", value: "0" },
         { label: "STP Verified", value: "Yes" },
         { label: "Match Rate", value: "100%" },
+      ]
+    : type === "super"
+    ? [
+        { label: "Employees", value: "3" },
+        { label: "Super Liability", value: "$4,623" },
+        { label: "Super Paid", value: "$0" },
+        { label: "Compliant", value: "✗ No" },
+      ]
+    : type === "financial"
+    ? [
+        { label: "Records Reviewed", value: "1" },
+        { label: "Revenue", value: "$20,947" },
+        { label: "Gross Profit", value: "-$1,951" },
+        { label: "Issues Found", value: "4" },
       ]
     : [
         { label: "Returns Analysed", value: "287" },
@@ -202,6 +268,33 @@ export function ReportModal({
       ]
     : type === "payroll"
     ? []
+    : type === "super"
+    ? [
+        {
+          item: "Super Guarantee",
+          severity: "high",
+          detail: "$4,623 liability outstanding - no payments found",
+        },
+      ]
+    : type === "financial"
+    ? [
+        {
+          item: "Profitability",
+          severity: "high",
+          detail: "Gross margin of -9.3% (critical)",
+        },
+        {
+          item: "Liquidity",
+          severity: "high",
+          detail: "Current ratio 0.87 (below 1.0)",
+        },
+        {
+          item: "Leverage",
+          severity: "medium",
+          detail: "Debt to equity ratio 2.39 (high)",
+        },
+        { item: "Net Result", severity: "high", detail: "Net loss of $1,951" },
+      ]
     : [
         {
           item: "Meridian Property Group",
@@ -244,6 +337,22 @@ export function ReportModal({
             ? "All payroll records reconciled. Confirm super payments are up to date."
             : "Partner sign-off required before next pay run.",
         ]
+      : type === "super"
+      ? [
+          ...realData!.issues.map((i) => i.recommendation),
+          ...realData!.warnings.map((w) => w.recommendation),
+          realData!.totalIssues === 0
+            ? "All super obligations met. Continue monitoring quarterly due dates."
+            : "Urgent: Process super payments before ATO quarterly due date.",
+        ]
+      : type === "financial"
+      ? [
+          "Prepare detailed variance analysis for partner review",
+          "Review cost of goods sold for margin improvement opportunities",
+          "Assess working capital management and liquidity position",
+          "Consider debt reduction strategies given high leverage",
+          "Partner sign-off required before final year-end reporting",
+        ]
       : [
           ...realData!.issues.map((i) => i.recommendation),
           ...(realData!.warnings.length > 0
@@ -266,12 +375,164 @@ export function ReportModal({
         "No action required — all records reconciled successfully.",
         "STP lodgements verified and compliant.",
       ]
+    : type === "super"
+    ? [
+        "Remit outstanding super to employee funds immediately.",
+        "Verify super fund details for all employees.",
+      ]
+    : type === "financial"
+    ? [
+        "Investigate reasons for negative gross margin",
+        "Review current assets and liabilities for liquidity improvement",
+        "Consider refinancing options to reduce debt-to-equity ratio",
+        "Partner sign-off required for financial review",
+      ]
     : [
         "Review Meridian Property Group tax codes before lodgement",
         "Schedule client advisory for Coastal Builders recurring miscoding",
         "Verify BAS lodgement dates for at-risk clients",
         "Run follow-up review after corrections applied",
       ];
+
+  const handleExport = () => {
+    const element = reportRef.current;
+    if (!element) return;
+    const opt = {
+      margin: [10, 10, 10, 10] as [number, number, number, number],
+      filename: `${title.replace(/ /g, "_")}_${
+        new Date().toISOString().split("T")[0]
+      }.pdf`,
+      image: { type: "jpeg" as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: {
+        unit: "mm" as const,
+        format: "a4" as const,
+        orientation: "portrait" as const,
+      },
+    };
+    html2pdf().set(opt).from(element).save();
+  };
+
+  const handleExcelExport = () => {
+    const wb = XLSX.utils.book_new();
+
+    const summaryData = [
+      ["National Accounts Internal Portal", "", ""],
+      [title, "", ""],
+      [`Generated: ${new Date().toLocaleDateString("en-AU")}`, "", ""],
+      [`Run by: ${staffEmails[0].email}`, "", ""],
+      ["", "", ""],
+      ["SUMMARY", "", ""],
+      ["Metric", "Value", ""],
+      ...summary.map((s) => [s.label, s.value, ""]),
+    ];
+
+    const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+    ws1["!cols"] = [{ wch: 30 }, { wch: 20 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws1, "Summary");
+
+    if (flagged.length > 0) {
+      const flaggedData = [
+        ["#", "Item", "Severity", "Detail", "Recommended Action"],
+        ...flagged.map((f, i) => [
+          i + 1,
+          f.item,
+          f.severity.toUpperCase(),
+          f.detail,
+          actions[i] || "Review required",
+        ]),
+      ];
+      const ws2 = XLSX.utils.aoa_to_sheet(flaggedData);
+      ws2["!cols"] = [
+        { wch: 5 },
+        { wch: 30 },
+        { wch: 12 },
+        { wch: 50 },
+        { wch: 60 },
+      ];
+      XLSX.utils.book_append_sheet(wb, ws2, "Flagged Items");
+    }
+
+    const actionsData = [
+      ["#", "Recommended Action", "Status", "Assigned To", "Due Date"],
+      ...actions.map((a, i) => [
+        i + 1,
+        a,
+        "Pending",
+        "Partner",
+        new Date().toLocaleDateString("en-AU"),
+      ]),
+    ];
+    const ws3 = XLSX.utils.aoa_to_sheet(actionsData);
+    ws3["!cols"] = [
+      { wch: 5 },
+      { wch: 70 },
+      { wch: 12 },
+      { wch: 15 },
+      { wch: 15 },
+    ];
+    XLSX.utils.book_append_sheet(wb, ws3, "Action Items");
+
+    const aiData = [
+      ["AI Analysis Report", ""],
+      [`Generated: ${new Date().toLocaleDateString("en-AU")}`, ""],
+      [`Model: GPT-4o-mini via GitHub Models API`, ""],
+      ["", ""],
+      ["Analysis", aiAnalysis || "No AI analysis available"],
+    ];
+    const ws4 = XLSX.utils.aoa_to_sheet(aiData);
+    ws4["!cols"] = [{ wch: 20 }, { wch: 100 }];
+    XLSX.utils.book_append_sheet(wb, ws4, "AI Analysis");
+
+    XLSX.writeFile(
+      wb,
+      `NationalAccounts_${title.replace(/ /g, "_")}_${
+        new Date().toISOString().split("T")[0]
+      }.xlsx`
+    );
+  };
+
+  const handleCSVExport = () => {
+    const rows = [
+      ["#", "Item", "Severity", "Detail", "Recommended Action"],
+      ...flagged.map((f, i) => [
+        String(i + 1),
+        f.item,
+        f.severity.toUpperCase(),
+        f.detail,
+        actions[i] || "Review required",
+      ]),
+    ];
+
+    const csv = rows
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      )
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `NationalAccounts_${title.replace(/ /g, "_")}_${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleEmailSend = (email: string, name: string) => {
+    setShowEmailDropdown(false);
+    setEmailSent(name);
+    setTimeout(() => setEmailSent(null), 3000);
+
+    console.group("📧 EMAIL REPORT — National Accounts Portal");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("📧 Sending report to:", name, `<${email}>`);
+    console.log("   └─ Report:", title);
+    console.log("   └─ Generated:", new Date().toLocaleString("en-AU"));
+    console.groupEnd();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -400,31 +661,66 @@ export function ReportModal({
           )}
         </div>
 
-        <div className="mt-5 flex justify-end gap-3 px-2">
-          <div className="relative group">
+        {/* Export buttons remain unchanged */}
+        <div className="mt-5 flex items-center justify-between px-2">
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-primary text-primary hover:bg-primary/5 font-semibold flex items-center gap-1"
+                onClick={() => setShowEmailDropdown(!showEmailDropdown)}
+              >
+                <Mail className="h-3.5 w-3.5" />
+                {emailSent
+                  ? `✓ Sent to ${emailSent.split(" ")[0]}`
+                  : "Email Report"}
+                <ChevronDown className="h-3 w-3" />
+              </Button>
+              {showEmailDropdown && (
+                <div className="absolute bottom-full left-0 mb-2 w-72 rounded border border-border bg-background shadow-lg z-50">
+                  <div className="px-3 py-2 border-b border-border">
+                    <p className="text-xs font-semibold text-primary">
+                      Send to National Accounts staff
+                    </p>
+                  </div>
+                  {staffEmails.map((staff) => (
+                    <button
+                      key={staff.email}
+                      onClick={() => handleEmailSend(staff.email, staff.name)}
+                      className="w-full text-left px-3 py-2 hover:bg-muted/50 transition-colors"
+                    >
+                      <p className="text-xs font-medium text-foreground">
+                        {staff.name}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {staff.email}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Button
               variant="outline"
+              size="sm"
+              onClick={handleExcelExport}
               className="border-accent text-accent hover:bg-accent/10 font-semibold"
-              disabled
             >
-              <svg
-                className="mr-2 h-4 w-4"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M6.28 3c3.236.001 4.973.028 6.192.28l.241.056c.878.217 1.65.698 2.128 1.516.229.397.37.838.42 1.295L15.28 6h.5a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h.009A17.15 17.15 0 0 1 6.28 3zm9.5 5h-9v10h9V8zM9.75 13.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1 0-1.5h1.5zm4 0a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1 0-1.5h1.5zm-4-3a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1 0-1.5h1.5zm4 0a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1 0-1.5h1.5z" />
-              </svg>
-              Save to Google Drive
+              <FileSpreadsheet className="mr-1.5 h-3.5 w-3.5" />
+              Excel
             </Button>
-            <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block z-50">
-              <div className="bg-primary text-white text-xs rounded px-3 py-2 w-56 shadow-lg">
-                <p className="font-semibold mb-1">⚠ Google Drive Integration</p>
-                <p>
-                  Requires National Accounts Google Workspace credentials.
-                  Available in Option 2 setup.
-                </p>
-              </div>
-            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCSVExport}
+              className="border-accent text-accent hover:bg-accent/10 font-semibold"
+            >
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+              CSV
+            </Button>
           </div>
 
           <Button
