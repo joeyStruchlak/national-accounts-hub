@@ -14,7 +14,11 @@ import AIAutomation from "./pages/AIAutomation";
 import Login from "./pages/login";
 import Terms from "./pages/terms";
 import NotFound from "./pages/NotFound";
+import GSTReconciliation from "./pages/GSTReconciliation";
+import BillingAutomation from "./pages/BillingAutomation";
+import LodgmentTracker from "./pages/LodgmentTracker";
 import { AuthGuard } from "./components/AuthGuard";
+
 
 const queryClient = new QueryClient();
 
@@ -35,6 +39,9 @@ const App = () => (
           <Route path="/super-rec" element={<AuthGuard><SuperRec /></AuthGuard>} />
           <Route path="/clients" element={<AuthGuard><ClientRecords /></AuthGuard>} />
           <Route path="/automation" element={<AuthGuard><AIAutomation /></AuthGuard>} />
+          <Route path="/gst-reconciliation" element={<AuthGuard><GSTReconciliation /></AuthGuard>} />
+          <Route path="/billing" element={<AuthGuard><BillingAutomation /></AuthGuard>} />
+          <Route path="/lodgments" element={<AuthGuard><LodgmentTracker /></AuthGuard>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
